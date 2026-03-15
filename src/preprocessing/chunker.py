@@ -1,4 +1,3 @@
-# src/preprocessing/chunker.py
 from typing import Generator, List
 from langchain_experimental.text_splitter import SemanticChunker
 from langchain_text_splitters import MarkdownHeaderTextSplitter
@@ -34,6 +33,7 @@ def chunk_md(
     headers_docs = header_splitter.split_text(md_text)
 
     chunk_idx = 0
+    page_index = 0
     for doc in headers_docs:
         section_text = doc.page_content
         metadata = doc.metadata
@@ -47,6 +47,7 @@ def chunk_md(
                     'pdf_sha1': pdf_sha1,
                     'chunk_index': chunk_idx,
                     'chunk_id': f"{pdf_sha1}_{chunk_idx}", 
+                    'page_index': page_index,
                     'headers': metadata,
                     'type': 'chunk', 
                 }
@@ -56,6 +57,8 @@ def chunk_md(
             if len(batch) >= batch_size:
                 yield batch
                 batch = []
+        
+        page_index+=1
     
     if batch:
-        yield batch
+        yield batch    
