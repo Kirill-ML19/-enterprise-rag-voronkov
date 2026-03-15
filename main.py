@@ -47,10 +47,6 @@ async def main():
 
         print(f"\nProcessing: {question_text[:80]}")
 
-        # -------------------------
-        # Retrieval
-        # -------------------------
-
         chunks = await retriever.retrieve(question_text)
 
         if not chunks:
@@ -61,10 +57,6 @@ async def main():
             })
             continue
 
-        # -------------------------
-        # Reranking
-        # -------------------------
-
         chunks = chunks[:25]
 
         chunks = await reranker.rerank(
@@ -74,10 +66,6 @@ async def main():
 
         chunks = chunks[:5]
 
-        # -------------------------
-        # Prompt
-        # -------------------------
-
         prompt = build_prompt(
             question=question_text,
             chunks=chunks,
@@ -85,18 +73,10 @@ async def main():
             question_kind=question_kind
         )
 
-        # -------------------------
-        # LLM
-        # -------------------------
-
         raw_answer = await llm.generate_async(
             prompt,
             timeout=60
         )
-
-        # -------------------------
-        # Formatting
-        # -------------------------
 
         answer = build_answer(
             raw_answer=raw_answer,
